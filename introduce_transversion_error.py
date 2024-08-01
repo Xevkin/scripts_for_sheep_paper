@@ -1,9 +1,9 @@
 import sys
 import fileinput
 import random
-
-
 #pipe bam file and give transversion error rate to add
+#e.g. samtools view -h sample.bam | python introduce_transversion_error.py - 0.01 | samtools view -Sb - > sample_error0-05.bam
+
 
 #error rate must be in PROPORTION (i.e. divide percentage by 100)
 
@@ -29,7 +29,7 @@ def main():
 
 			BASES = SPLINE[9]
 
-			print("\t".join(SPLINE[0:9]) + "\t" + tranv_err(BASES,ERROR_RATE) + "\t"+ "\t".join(SPLINE[11:]))
+			print("\t".join(SPLINE[0:9]) + "\t" + tranv_err(BASES,ERROR_RATE) + "\t"+ "\t".join(SPLINE[10:]))
 
 
 # error function
@@ -38,8 +38,6 @@ def main():
 # assume that the sequence is "correct" i.e. errors added are not correcting other errors
 
 def tranv_err(SEQ, ERR):
-
-	SEQ="GGGGGGGGGGGGGGGGGGGG"
 
 	# store error-added sequence
 	ERR_SEQ = ""
@@ -55,7 +53,7 @@ def tranv_err(SEQ, ERR):
 		if random.uniform(0, 1.0) <= ERR:
 
 			#change the base randomly to one of the two possible transversions, at an equal rate
-			if random.uniform(0, 1.0) <= 0.05:
+			if random.uniform(0, 1.0) <= 0.5:
 
 				if BASE == "A":
 
@@ -74,22 +72,21 @@ def tranv_err(SEQ, ERR):
 					BASE = "T"
 
 			else:
-                                if BASE == "A":
+				if BASE == "A":
 
 					BASE = "T"
 
-                                elif BASE == "C":
+				elif BASE == "C":
 
-                                        BASE = "G"
+					BASE = "G"
 
-                                elif BASE == "T":
+				elif BASE == "T":
 
-                                        BASE = "A"
+					BASE = "A"
 
-                                else:
+				else:
 
-                                        BASE = "C"
-
+					BASE = "C"
 
 		# added the base, possibly changed, to the bases to be returned
 		ERR_SEQ = ERR_SEQ + BASE
